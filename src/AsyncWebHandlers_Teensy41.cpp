@@ -157,13 +157,11 @@ bool AsyncStaticWebHandler::_getFile(AsyncWebServerRequest *request)
 
 bool AsyncStaticWebHandler::canHandle(AsyncWebServerRequest *request)
 {
-  Serial.printf("Request:%s, expected:%s\n", request->url().c_str(), _uri.c_str());
   if (request->method() != HTTP_GET
       || !request->url().startsWith(_uri)
       || !request->isExpectedRequestedConnType(RCT_DEFAULT, RCT_HTTP)
      )
-  {
-    DEBUGF("[AsyncStaticWebHandler::canHandle] No URI Match\n");
+  {    
     return false;
   }
   if (_getFile(request)) {
@@ -174,10 +172,9 @@ bool AsyncStaticWebHandler::canHandle(AsyncWebServerRequest *request)
     if(_cache_control.length())
       request->addInterestingHeader("If-None-Match");
 
-    DEBUGF("[AsyncStaticWebHandler::canHandle] TRUE\n");
     return true;
   }
-    DEBUGF("[AsyncStaticWebHandler::canHandle] No File\n");
+  
   return false;
 }
 
@@ -193,29 +190,19 @@ bool AsyncStaticWebHandler::_fileExists(AsyncWebServerRequest *request, const St
 
   String gzip = path + ".gz";
 
-  if (_gzipFirst) {
-    Serial.printf("_gzipFirst\n");
+  if (_gzipFirst) {    
     request->_tempFile = _fs->open(gzip);
-    Serial.printf("_gzipFirst:request->_tempFile = _fs->open(gzip);\n");
     gzipFound = FILE_IS_REAL(request->_tempFile);    
-    Serial.printf("_gzipFirst: gzipFound =%d\n",gzipFound);
     if (!gzipFound){
-      request->_tempFile = _fs->open(path);  
-      Serial.printf("_gzipFirst:request->_tempFile = _fs->open(path)\n");
-      fileFound = FILE_IS_REAL(request->_tempFile);
-      Serial.printf("_gzipFirst: fileFound =%d\n",fileFound);
+      request->_tempFile = _fs->open(path);        
+      fileFound = FILE_IS_REAL(request->_tempFile);      
     }
-  } else {
-    Serial.printf("!_gzipFirst\n");
-    request->_tempFile = _fs->open(path);
-    Serial.printf("!_gzipFirst:request->_tempFile = _fs->open(path);\n");
-    fileFound = FILE_IS_REAL(request->_tempFile);
-    Serial.printf("!_gzipFirst: fileFound =%d\n",fileFound);
+  } else {    
+    request->_tempFile = _fs->open(path);    
+    fileFound = FILE_IS_REAL(request->_tempFile);    
     if (!fileFound){
-      request->_tempFile = _fs->open(gzip);
-      Serial.printf("!_gzipFirst:request->_tempFile = _fs->open(gzip);\n");
-      gzipFound = FILE_IS_REAL(request->_tempFile);
-      Serial.printf("!_gzipFirst: gzipFound =%d\n",gzipFound);
+      request->_tempFile = _fs->open(gzip);      
+      gzipFound = FILE_IS_REAL(request->_tempFile);      
     }
   }
 

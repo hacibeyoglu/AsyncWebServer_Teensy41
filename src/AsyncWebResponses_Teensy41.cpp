@@ -1192,39 +1192,39 @@ void AsyncFileResponse::_setContentType(const String& path){
   else _contentType = "text/plain";
 }
 
-// AsyncFileResponse::AsyncFileResponse(FS &fs, const String& path, const String& contentType, bool download, AwsTemplateProcessor callback): AsyncAbstractResponse(callback){
-//   _code = 200;
-//   _path = path;
+AsyncFileResponse::AsyncFileResponse(FS &fs, const String& path, const String& contentType, bool download, AwsTemplateProcessor callback): AsyncAbstractResponse(callback){
+  _code = 200;
+  _path = path;
 
-//   if(!download && !fs.exists(_path) && fs.exists(_path+".gz")){
-//     _path = _path+".gz";
-//     addHeader("Content-Encoding", "gzip");
-//     _callback = nullptr; // Unable to process zipped templates
-//     _sendContentLength = true;
-//     _chunked = false;
-//   }
+  if(!download && !fs.exists(_path) && fs.exists(_path+".gz")){
+    _path = _path+".gz";
+    addHeader("Content-Encoding", "gzip");
+    _callback = nullptr; // Unable to process zipped templates
+    _sendContentLength = true;
+    _chunked = false;
+  }
 
-//   _content = fs.open(_path);
-//   _contentLength = _content.size();
+  _content = fs.open(_path);
+  _contentLength = _content.size();
 
-//   if(contentType == "")
-//     _setContentType(path);
-//   else
-//     _contentType = contentType;
+  if(contentType == "")
+    _setContentType(path);
+  else
+    _contentType = contentType;
 
-//   int filenameStart = path.lastIndexOf('/') + 1;
-//   char buf[26+path.length()-filenameStart];
-//   char* filename = (char*)path.c_str() + filenameStart;
+  int filenameStart = path.lastIndexOf('/') + 1;
+  char buf[26+path.length()-filenameStart];
+  char* filename = (char*)path.c_str() + filenameStart;
 
-//   if(download) {
-//     // set filename and force download
-//     snprintf(buf, sizeof (buf), "attachment; filename=\"%s\"", filename);
-//   } else {
-//     // set filename and force rendering
-//     snprintf(buf, sizeof (buf), "inline; filename=\"%s\"", filename);
-//   }
-//   addHeader("Content-Disposition", buf);
-// }
+  if(download) {
+    // set filename and force download
+    snprintf(buf, sizeof (buf), "attachment; filename=\"%s\"", filename);
+  } else {
+    // set filename and force rendering
+    snprintf(buf, sizeof (buf), "inline; filename=\"%s\"", filename);
+  }
+  addHeader("Content-Disposition", buf);
+}
 
 AsyncFileResponse::AsyncFileResponse(File content, const String& path, const String& contentType, bool download, AwsTemplateProcessor callback): AsyncAbstractResponse(callback){
   _code = 200;
