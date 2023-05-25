@@ -256,6 +256,11 @@ AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, ArRequestHandlerFun
   return *handler;
 }
 
+AsyncStaticWebHandler& AsyncWebServer::serveStatic(const char* uri, FS* fs, const char* path, const char* cache_control){
+  AsyncStaticWebHandler* handler = new AsyncStaticWebHandler(uri, fs, path, cache_control);
+  addHandler(handler);
+  return *handler;
+}
 /////////////////////////////////////////////////
 
 void AsyncWebServer::onNotFound(ArRequestHandlerFunction fn)

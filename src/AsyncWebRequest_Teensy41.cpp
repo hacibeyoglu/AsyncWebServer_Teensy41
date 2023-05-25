@@ -271,13 +271,13 @@ void AsyncWebServerRequest::_removeNotInterestingHeaders()
   if (_interestingHeaders.containsIgnoreCase("ANY"))
     return; // nothing to do
 
-  for (const auto& header : _headers)
-  {
-    if (!_interestingHeaders.containsIgnoreCase(header->name().c_str()))
-    {
-      _headers.remove(header);
-    }
-  }
+  // for (const auto& header : _headers)
+  // {
+  //   if (!_interestingHeaders.containsIgnoreCase(header->name().c_str()))
+  //   {
+  //     _headers.remove(header);
+  //   }
+  // }
 }
 
 /////////////////////////////////////////////////
@@ -1162,7 +1162,17 @@ AsyncResponseStream * AsyncWebServerRequest::beginResponseStream(const String& c
 {
   return new AsyncResponseStream(contentType, bufferSize);
 }
+AsyncWebServerResponse * AsyncWebServerRequest::beginResponse(FS &fs, const String& path, const String& contentType, bool download, AwsTemplateProcessor callback){
+  if(fs.exists(path) || (!download && fs.exists(path+".gz")))
+    return new AsyncFileResponse(fs, path, contentType, download, callback);
+  return NULL;
+}
 
+AsyncWebServerResponse * AsyncWebServerRequest::beginResponse(File content, const String& path, const String& contentType, bool download, AwsTemplateProcessor callback){
+  if(content == true)
+    return new AsyncFileResponse(content, path, contentType, download, callback);
+  return NULL;
+}
 //RSMOD///////////////////////////////////////////////
 
 void AsyncWebServerRequest::send(int code, const String& contentType, const char *content, bool nonCopyingSend)
@@ -1483,7 +1493,7 @@ bool AsyncWebServerRequest::isExpectedRequestedConnType(RequestedConnectionType 
                                                         RequestedConnectionType erct3)
 {
   bool res = false;
-
+  
   if ((erct1 != RCT_NOT_USED) && (erct1 == _reqconntype))
     res = true;
 

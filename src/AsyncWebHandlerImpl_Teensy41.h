@@ -42,17 +42,20 @@
 
 #include "stddef.h"
 #include <time.h>
-
+#include <SD.h>
 /////////////////////////////////////////////////
 
 class AsyncStaticWebHandler: public AsyncWebHandler
 {
   private:
     uint8_t _countBits(const uint8_t value) const;
-
+    bool _getFile(AsyncWebServerRequest *request);
+    bool _fileExists(AsyncWebServerRequest *request, const String& path);
   protected:
+    FS *_fs = &SD;
     String _uri;
     String _path;
+    String _default_file;
     String _cache_control;
     String _last_modified;
     AwsTemplateProcessor _callback;
@@ -61,10 +64,11 @@ class AsyncStaticWebHandler: public AsyncWebHandler
     uint8_t _gzipStats;
 
   public:
-    AsyncStaticWebHandler(const char* uri, const char* path, const char* cache_control);
+    AsyncStaticWebHandler(const char* uri, FS* fs,const char* path, const char* cache_control);
     virtual bool canHandle(AsyncWebServerRequest *request) override final;
     virtual void handleRequest(AsyncWebServerRequest *request) override final;
     AsyncStaticWebHandler& setIsDir(bool isDir);
+    AsyncStaticWebHandler& setDefaultFile(const char* filename);
     AsyncStaticWebHandler& setCacheControl(const char* cache_control);
     AsyncStaticWebHandler& setLastModified(const char* last_modified);
     AsyncStaticWebHandler& setLastModified(struct tm* last_modified);
