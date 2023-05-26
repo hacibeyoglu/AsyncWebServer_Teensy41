@@ -70,11 +70,11 @@ AsyncWebServer::AsyncWebServer(uint16_t port)
     AsyncWebServerRequest *r = new AsyncWebServerRequest((AsyncWebServer*)s, c);
 
     if (r == NULL)
-    {
+      {
       c->close(true);
       c->free();
       delete c;
-    }
+    } 
   }, this);
 }
 
@@ -266,6 +266,11 @@ AsyncStaticWebHandler& AsyncWebServer::serveStatic(const char* uri, FS* fs, cons
 void AsyncWebServer::onNotFound(ArRequestHandlerFunction fn)
 {
   _catchAllHandler->onRequest(fn);
+}
+
+void AsyncWebServer::onFileUpload(ArUploadHandlerFunction fn)
+{  
+  _catchAllHandler->onUpload(fn);
 }
 
 /////////////////////////////////////////////////

@@ -196,7 +196,12 @@ class AsyncCallbackWebHandler: public AsyncWebHandler
     }
 
     /////////////////////////////////////////////////
-
+    virtual void handleUpload(AsyncWebServerRequest *request, const String &filename, size_t index, uint8_t *data, size_t len, bool final) override final
+    {
+      if (_onUpload)
+        _onUpload(request, filename, index, data, len, final);
+    }
+    
     virtual void handleBody(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index,
                             size_t total) override final
     {
